@@ -1,6 +1,5 @@
--- ZENUX UNIVERSAL HUB - TROLL EDITION
--- Version: 2.0.0 | Ultimate Trolling Toolkit
--- Compatible with ALL Roblox Games
+-- ZENUX ULTIMATE TROLL HUB V3.0
+-- Modern Blue/Black Edition with Auto Chat System
 
 repeat task.wait() until game:IsLoaded()
 
@@ -19,12 +18,11 @@ local UserInputService = Services.UserInputService
 local TweenService = Services.TweenService
 local Lighting = Services.Lighting
 local Workspace = Services.Workspace
-local ReplicatedStorage = Services.ReplicatedStorage
-local SoundService = Services.SoundService
+local HttpService = Services.HttpService
 local StarterGui = Services.StarterGui
-local VirtualUser = Services.VirtualUser
-local VirtualInputManager = Services.VirtualInputManager
 local TeleportService = Services.TeleportService
+local ReplicatedStorage = Services.ReplicatedStorage
+local TextChatService = Services.TextChatService
 
 local Player = Players.LocalPlayer
 local Mouse = Player:GetMouse()
@@ -43,31 +41,202 @@ end
 
 UpdateCharacter()
 
--- Zenux Core
+-- Zenux Core System
 local Zenux = {
-    Version = "2.0.0",
+    Version = "3.0.0",
     Connections = {},
     Objects = {},
-    TrollTargets = {},
+    SelectedPlayers = {},
+    TrollModes = {},
     
     Settings = {
-        -- Troll Settings
-        FlingPower = 1000,
-        SpinSpeed = 100,
-        RocketSpeed = 500,
-        HeadSize = 10,
-        
-        -- Visual
-        Fullbright = false,
-        
-        -- Movement
-        WalkSpeed = 16,
-        FlySpeed = 100,
-        NoClip = false,
-    }
+        FlingPower = 2000,
+        SpinSpeed = 150,
+        LaunchHeight = 800,
+        OrbitRadius = 20,
+        TornadoPower = 100,
+        ExplosionSize = 30,
+        FlySpeed = 150,
+        AutoChatEnabled = true
+    },
+    
+    -- Sistema de Chat Brasileiro para PLAYERS SELECIONADOS
+    ChatMessages = {
+        Launch = {
+            "krlh to voando",
+            "oq ta aconteceno mano",
+            "para com isso vei",
+            "vsf mlk",
+            "qq ta contecendo",
+            "bagulho ta louco",
+            "eita porra",
+            "alguem me ajuda namoral",
+            "q isso vei",
+            "pqp velho",
+            "cara eu to voando wtf",
+            "oq esse mlk ta fazendo",
+            "admin bane esse cara pfv",
+            "ta loco mano",
+            "para ae namoral",
+            "mlk me lancou no ar",
+            "como assim to voando",
+            "isso e hack certeza"
+        },
+        Explode = {
+            "explodiu tudo aqui mano",
+            "q isso vei kkkk",
+            "pqp oq foi isso",
+            "bomba?????",
+            "caralho explodiu td",
+            "vsf quem fez isso",
+            "bagulho explodiu namoral",
+            "qq ta acontecendo mano",
+            "admin????",
+            "oq e isso mano",
+            "mlk ta hackeando",
+            "para ae velho",
+            "namoral q isso",
+            "explosao do nada vei",
+            "tem hacker aqui certeza"
+        },
+        Spin = {
+            "to rodando sem parar socorro",
+            "alguem me ajuda pelo amor",
+            "para de girar isso vei",
+            "vsf to tonto",
+            "cara eu to girando wtf",
+            "q hacker e esse mano",
+            "bagulho ta girando",
+            "oq ta rolando aqui",
+            "to tonto demais",
+            "para com isso namoral",
+            "to rodando infinito",
+            "alguem faz parar pfv",
+            "q bug e esse vei",
+            "admin olha isso",
+            "girando sem parar mano"
+        },
+        Fling = {
+            "pqp me arremessaram",
+            "voei longe demais vei",
+            "oq foi isso cara",
+            "mlk me jogou pra longe",
+            "como ele fez isso mano",
+            "vsf sai voando",
+            "bagulho me lancou",
+            "to voando namoral",
+            "para com esse hack vei",
+            "alguem viu isso???",
+            "fui arremessado wtf",
+            "q poder e esse",
+            "hacker fdp",
+            "me jogaram longe vei"
+        },
+        Freeze = {
+            "nao consigo mexer",
+            "to bugado aqui vei",
+            "travei namoral",
+            "oq aconteceu mano",
+            "nao consigo andar wtf",
+            "vsf to travado",
+            "alguem me desbuga",
+            "to congelado socorro",
+            "para com isso ae",
+            "admin me ajuda",
+            "bug do krl",
+            "como desbuga isso",
+            "nao to conseguindo sair",
+            "to preso aqui vei"
+        },
+        Cage = {
+            "me prenderam numa gaiola vei",
+            "como saio daqui mano",
+            "to preso namoral",
+            "vsf me solta",
+            "q gaiola e essa",
+            "alguem me tira daqui",
+            "to encarcerado kkkkk",
+            "deixa eu sair daqui vei",
+            "como faz isso mano",
+            "hack de prender wtf",
+            "soltem me pfv",
+            "admin olha isso aqui",
+            "to preso numa caixa vei"
+        },
+        Tornado = {
+            "tem um tornado aqui vei",
+            "vsf q vento e esse",
+            "to sendo sugado mano",
+            "tornado do nada wtf",
+            "alguem para esse vento",
+            "bagulho ta me puxando",
+            "como para isso vei",
+            "tornado hack???",
+            "q vento forte mano",
+            "to subindo namoral",
+            "para com essa magia ae",
+            "vento me pegou vei"
+        },
+        BlackHole = {
+            "tem um buraco negro aqui",
+            "to sendo puxado vei",
+            "vsf q buraco e esse",
+            "gravitade ta estranha mano",
+            "alguem ve isso???",
+            "buraco negro wtf",
+            "como para isso namoral",
+            "admin bane esse hacker",
+            "bagulho ta me sugando",
+            "fisica quebrou vei",
+            "gravitade bugou mano"
+        },
+        Ragdoll = {
+            "to todo quebrado vei",
+            "virei boneco de pano mano",
+            "vsf oq fizeram cmg",
+            "nao consigo levantar",
+            "to todo mole namoral",
+            "como levanta isso",
+            "ragdoll hack???",
+            "alguem me ajuda ae",
+            "to desmontado vei",
+            "pqp to todo torto",
+            "quebrei tudo mano"
+        },
+        Clone = {
+            "tem varios eu aqui vei",
+            "oq e isso mano",
+            "clones do nada wtf",
+            "vsf quantos sao",
+            "to vendo duplo namoral",
+            "bagulho clonou todo mundo",
+            "q hack e esse",
+            "admin olha quantos tem",
+            "multiplicou geral vei",
+            "ta cheio de clone",
+            "clonaram a gente mano"
+        },
+        Attach = {
+            "to grudado nele vei",
+            "nao consigo sair daqui",
+            "me solta mlk",
+            "to colado wtf",
+            "como sai disso mano",
+            "to preso nele namoral"
+        },
+        Orbit = {
+            "to girando em volta dele vei",
+            "virando satelite mano",
+            "to orbitando wtf",
+            "q isso vei to flutuando",
+            "to rodando ao redor dele"
+        }
+    },
+    
+    UsedMessages = {}
 }
 
--- Notification
+-- Utility Functions
 function Zenux:Notify(title, text, duration)
     duration = duration or 3
     pcall(function()
@@ -79,440 +248,546 @@ function Zenux:Notify(title, text, duration)
     end)
 end
 
--- Tween Function
-function Zenux:Tween(obj, props, duration)
-    local tween = TweenService:Create(obj, TweenInfo.new(duration or 1), props)
-    tween:Play()
-    return tween
-end
-
--- Get Distance
-function Zenux:GetDistance(pos1, pos2)
-    if typeof(pos1) == "Instance" then pos1 = pos1.Position end
-    if typeof(pos2) == "Instance" then pos2 = pos2.Position end
-    return (pos1 - pos2).Magnitude
-end
-
--- TROLL FUNCTIONS
-
--- Super Fling
-function Zenux:SuperFling(enabled)
-    if enabled then
-        self.Connections.Fling = RunService.Heartbeat:Connect(function()
-            if RootPart then
-                RootPart.Velocity = Vector3.new(0, self.Settings.FlingPower, 0)
-                RootPart.RotVelocity = Vector3.new(9e9, 9e9, 9e9)
-                
-                for _, part in pairs(Character:GetDescendants()) do
-                    if part:IsA("BasePart") then
-                        part.CanCollide = false
-                        part.Massless = true
-                    end
-                end
-            end
-        end)
-    else
-        if self.Connections.Fling then
-            self.Connections.Fling:Disconnect()
-        end
-        if RootPart then
-            RootPart.Velocity = Vector3.new(0, 0, 0)
-            RootPart.RotVelocity = Vector3.new(0, 0, 0)
+-- Sistema de Chat Automatico para PLAYERS SELECIONADOS
+function Zenux:SendFakeChatForPlayer(player, messageType)
+    if not self.Settings.AutoChatEnabled then return end
+    if not player or player == Player then return end
+    
+    local messages = self.ChatMessages[messageType] or {}
+    if #messages == 0 then return end
+    
+    -- Inicializa array de mensagens usadas para este player
+    if not self.UsedMessages[player.UserId] then
+        self.UsedMessages[player.UserId] = {}
+    end
+    
+    local availableMessages = {}
+    
+    -- Filtra mensagens que ainda não foram usadas por este player
+    for _, msg in pairs(messages) do
+        if not table.find(self.UsedMessages[player.UserId], msg) then
+            table.insert(availableMessages, msg)
         end
     end
+    
+    -- Se todas foram usadas, reseta para este player
+    if #availableMessages == 0 then
+        self.UsedMessages[player.UserId] = {}
+        availableMessages = messages
+    end
+    
+    -- Seleciona mensagem aleatoria
+    local randomMsg = availableMessages[math.random(1, #availableMessages)]
+    table.insert(self.UsedMessages[player.UserId], randomMsg)
+    
+    -- Mantem apenas as ultimas 15 mensagens usadas por este player
+    if #self.UsedMessages[player.UserId] > 15 then
+        table.remove(self.UsedMessages[player.UserId], 1)
+    end
+    
+    -- Tenta enviar no chat como se fosse o player (isso é visual apenas)
+    -- Na prática, só seu personagem pode enviar, mas vamos fazer parecer que é o player
+    task.spawn(function()
+        -- Método 1: Chat antigo
+        pcall(function()
+            local args = {
+                [1] = randomMsg,
+                [2] = "All"
+            }
+            ReplicatedStorage:WaitForChild("DefaultChatSystemChatEvents"):WaitForChild("SayMessageRequest"):FireServer(unpack(args))
+        end)
+        
+        -- Método 2: TextChatService
+        pcall(function()
+            TextChatService.TextChannels.RBXGeneral:SendAsync(randomMsg)
+        end)
+    end)
 end
 
--- Rocket Player
-function Zenux:RocketPlayer(playerName)
+function Zenux:GetPlayerByName(name)
     for _, player in pairs(Players:GetPlayers()) do
-        if player.Name:lower():find(playerName:lower()) and player.Character then
-            local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-            if hrp then
-                local rocket = Instance.new("RocketPropulsion")
-                rocket.Target = hrp
-                rocket.MaxSpeed = self.Settings.RocketSpeed
-                rocket.MaxThrust = 50000
-                rocket.Parent = RootPart
-                rocket:Fire()
+        if player.Name:lower():find(name:lower()) or player.DisplayName:lower():find(name:lower()) then
+            return player
+        end
+    end
+    return nil
+end
+
+function Zenux:GetSelectedPlayers()
+    local selected = {}
+    for player, isSelected in pairs(self.SelectedPlayers) do
+        if isSelected and player.Parent then
+            table.insert(selected, player)
+        end
+    end
+    return selected
+end
+
+-- ADVANCED TROLL FUNCTIONS
+
+function Zenux:RagdollPlayer(player)
+    if player.Character then
+        local humanoid = player.Character:FindFirstChild("Humanoid")
+        if humanoid then
+            humanoid:ChangeState(Enum.HumanoidStateType.Physics)
+            task.delay(3, function()
+                if humanoid then
+                    humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
+                end
+            end)
+            
+            self:SendFakeChatForPlayer(player, "Ragdoll")
+        end
+    end
+end
+
+function Zenux:SpinPlayer(player, speed)
+    if player.Character then
+        local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            local spin = Instance.new("BodyAngularVelocity")
+            spin.Name = "ZenuxSpin"
+            spin.Parent = hrp
+            spin.MaxTorque = Vector3.new(0, math.huge, 0)
+            spin.AngularVelocity = Vector3.new(0, speed or 100, 0)
+            
+            task.delay(5, function()
+                if spin.Parent then spin:Destroy() end
+            end)
+            
+            self:SendFakeChatForPlayer(player, "Spin")
+        end
+    end
+end
+
+function Zenux:LaunchPlayer(player, height)
+    if player.Character then
+        local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            local bv = Instance.new("BodyVelocity")
+            bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+            bv.Velocity = Vector3.new(0, height or 500, 0)
+            bv.Parent = hrp
+            
+            task.delay(0.5, function()
+                if bv.Parent then bv:Destroy() end
+            end)
+            
+            self:SendFakeChatForPlayer(player, "Launch")
+        end
+    end
+end
+
+function Zenux:FreezePlayer(player, freeze)
+    if player.Character then
+        for _, part in pairs(player.Character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.Anchored = freeze
+            end
+        end
+        
+        if freeze then
+            self:SendFakeChatForPlayer(player, "Freeze")
+        end
+    end
+end
+
+function Zenux:InvisiblePlayer(player, invisible)
+    if player.Character then
+        for _, part in pairs(player.Character:GetDescendants()) do
+            if part:IsA("BasePart") or part:IsA("Decal") then
+                part.Transparency = invisible and 1 or 0
+            end
+        end
+    end
+end
+
+function Zenux:FlingPlayer(player, power)
+    if player.Character then
+        local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            hrp.Velocity = Vector3.new(
+                math.random(-power, power),
+                power,
+                math.random(-power, power)
+            )
+            hrp.RotVelocity = Vector3.new(9e9, 9e9, 9e9)
+            
+            self:SendFakeChatForPlayer(player, "Fling")
+        end
+    end
+end
+
+function Zenux:TeleportToYou(player)
+    if player.Character and RootPart then
+        local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            hrp.CFrame = RootPart.CFrame + Vector3.new(math.random(-5, 5), 0, math.random(-5, 5))
+        end
+    end
+end
+
+function Zenux:TeleportToPlayer(player)
+    if player.Character and RootPart then
+        local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            RootPart.CFrame = hrp.CFrame + Vector3.new(0, 3, 0)
+        end
+    end
+end
+
+function Zenux:AttachPlayer(player)
+    if player.Character and RootPart then
+        local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            local weld = Instance.new("Weld")
+            weld.Name = "ZenuxAttach"
+            weld.Part0 = RootPart
+            weld.Part1 = hrp
+            weld.C0 = CFrame.new(math.random(-5, 5), 0, math.random(-5, 5))
+            weld.Parent = RootPart
+            
+            self:SendFakeChatForPlayer(player, "Attach")
+        end
+    end
+end
+
+function Zenux:CagePlayer(player)
+    if player.Character then
+        local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            local cage = Instance.new("Model")
+            cage.Name = "ZenuxCage"
+            
+            for i = 1, 6 do
+                local wall = Instance.new("Part")
+                wall.Size = Vector3.new(10, 10, 1)
+                wall.Anchored = true
+                wall.BrickColor = BrickColor.new("Really black")
+                wall.Material = Enum.Material.Neon
                 
-                task.delay(3, function()
-                    rocket:Destroy()
-                end)
+                if i == 1 then wall.Position = hrp.Position + Vector3.new(0, 0, 5) end
+                if i == 2 then wall.Position = hrp.Position + Vector3.new(0, 0, -5) end
+                if i == 3 then 
+                    wall.Size = Vector3.new(1, 10, 10)
+                    wall.Position = hrp.Position + Vector3.new(5, 0, 0) 
+                end
+                if i == 4 then 
+                    wall.Size = Vector3.new(1, 10, 10)
+                    wall.Position = hrp.Position + Vector3.new(-5, 0, 0) 
+                end
+                if i == 5 then 
+                    wall.Size = Vector3.new(10, 1, 10)
+                    wall.Position = hrp.Position + Vector3.new(0, 5, 0) 
+                end
+                if i == 6 then 
+                    wall.Size = Vector3.new(10, 1, 10)
+                    wall.Position = hrp.Position + Vector3.new(0, -5, 0) 
+                end
                 
-                self:Notify("Rocket", "Voando para " .. player.Name, 2)
-                return
+                wall.Parent = cage
             end
+            
+            cage.Parent = Workspace
+            self:SendFakeChatForPlayer(player, "Cage")
         end
     end
 end
 
--- Explode Player
-function Zenux:ExplodePlayer(playerName)
-    for _, player in pairs(Players:GetPlayers()) do
-        if player.Name:lower():find(playerName:lower()) and player.Character then
-            local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-            if hrp then
-                local explosion = Instance.new("Explosion")
-                explosion.Position = hrp.Position
-                explosion.BlastRadius = 20
-                explosion.BlastPressure = 500000
-                explosion.Parent = Workspace
-                
-                self:Notify("Explode", "Explosao em " .. player.Name, 2)
-                return
-            end
+function Zenux:ExplodePlayer(player, size)
+    if player.Character then
+        local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            local exp = Instance.new("Explosion")
+            exp.Position = hrp.Position
+            exp.BlastRadius = size or 20
+            exp.BlastPressure = 500000
+            exp.Parent = Workspace
+            
+            self:SendFakeChatForPlayer(player, "Explode")
         end
     end
 end
 
--- Teleport All Players
-function Zenux:TeleportAllPlayers(enabled)
-    if enabled then
-        self.Connections.TPAll = RunService.Heartbeat:Connect(function()
-            task.wait(0.5)
-            for _, player in pairs(Players:GetPlayers()) do
-                if player ~= Player and player.Character then
-                    local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-                    if hrp then
-                        hrp.CFrame = RootPart.CFrame + Vector3.new(math.random(-10, 10), 0, math.random(-10, 10))
-                    end
-                end
-            end
-        end)
-    else
-        if self.Connections.TPAll then
-            self.Connections.TPAll:Disconnect()
+function Zenux:RocketPlayer(player)
+    if player.Character and RootPart then
+        local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            local rocket = Instance.new("RocketPropulsion")
+            rocket.Target = hrp
+            rocket.MaxSpeed = 500
+            rocket.MaxThrust = 50000
+            rocket.Parent = RootPart
+            rocket:Fire()
+            
+            task.delay(3, function()
+                if rocket.Parent then rocket:Destroy() end
+            end)
         end
     end
 end
 
--- Spin All Players
-function Zenux:SpinAllPlayers(enabled)
-    if enabled then
-        self.Connections.SpinAll = RunService.Heartbeat:Connect(function()
-            for _, player in pairs(Players:GetPlayers()) do
-                if player ~= Player and player.Character then
-                    local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-                    if hrp then
-                        local spin = hrp:FindFirstChild("ZenuxSpin") or Instance.new("BodyAngularVelocity")
-                        spin.Name = "ZenuxSpin"
-                        spin.Parent = hrp
-                        spin.MaxTorque = Vector3.new(0, 9e9, 0)
-                        spin.AngularVelocity = Vector3.new(0, 100, 0)
-                    end
-                end
-            end
-        end)
-    else
-        if self.Connections.SpinAll then
-            self.Connections.SpinAll:Disconnect()
-        end
-        for _, player in pairs(Players:GetPlayers()) do
-            if player.Character then
-                local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-                if hrp and hrp:FindFirstChild("ZenuxSpin") then
-                    hrp.ZenuxSpin:Destroy()
-                end
-            end
-        end
-    end
-end
-
--- Launch All Players
-function Zenux:LaunchAllPlayers()
-    for _, player in pairs(Players:GetPlayers()) do
-        if player ~= Player and player.Character then
-            local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-            if hrp then
-                local bv = Instance.new("BodyVelocity")
-                bv.MaxForce = Vector3.new(9e9, 9e9, 9e9)
-                bv.Velocity = Vector3.new(0, 500, 0)
-                bv.Parent = hrp
-                
-                task.delay(1, function()
-                    bv:Destroy()
-                end)
-            end
-        end
-    end
-    self:Notify("Launch", "Todos os jogadores foram lancados!", 2)
-end
-
--- Freeze All Players
-function Zenux:FreezeAllPlayers(enabled)
-    if enabled then
-        for _, player in pairs(Players:GetPlayers()) do
-            if player ~= Player and player.Character then
-                local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-                if hrp then
-                    hrp.Anchored = true
-                end
-            end
-        end
-    else
-        for _, player in pairs(Players:GetPlayers()) do
-            if player.Character then
-                local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-                if hrp then
-                    hrp.Anchored = false
-                end
-            end
-        end
-    end
-end
-
--- Fling All Players
-function Zenux:FlingAllPlayers(enabled)
-    if enabled then
-        self.Connections.FlingAll = RunService.Heartbeat:Connect(function()
-            for _, player in pairs(Players:GetPlayers()) do
-                if player ~= Player and player.Character then
-                    local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-                    if hrp then
-                        hrp.Velocity = Vector3.new(math.random(-200, 200), 500, math.random(-200, 200))
-                        hrp.RotVelocity = Vector3.new(9e9, 9e9, 9e9)
-                    end
-                end
-            end
-        end)
-    else
-        if self.Connections.FlingAll then
-            self.Connections.FlingAll:Disconnect()
-        end
-    end
-end
-
--- Attach All Players
-function Zenux:AttachAllPlayers(enabled)
-    if enabled then
-        for _, player in pairs(Players:GetPlayers()) do
-            if player ~= Player and player.Character then
-                local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-                if hrp then
-                    local weld = Instance.new("Weld")
-                    weld.Name = "ZenuxAttach"
-                    weld.Part0 = RootPart
-                    weld.Part1 = hrp
-                    weld.C0 = CFrame.new(math.random(-10, 10), 0, math.random(-10, 10))
-                    weld.Parent = RootPart
-                end
-            end
-        end
-    else
-        for _, weld in pairs(RootPart:GetChildren()) do
-            if weld.Name == "ZenuxAttach" then
-                weld:Destroy()
-            end
-        end
-    end
-end
-
--- Orbit Players Around You
-function Zenux:OrbitPlayers(enabled)
+function Zenux:OrbitPlayer(player, enabled)
     if enabled then
         local angle = 0
-        self.Connections.Orbit = RunService.Heartbeat:Connect(function()
-            angle = angle + 0.05
-            local radius = 15
-            local i = 0
-            
-            for _, player in pairs(Players:GetPlayers()) do
-                if player ~= Player and player.Character then
-                    local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-                    if hrp then
-                        local offsetAngle = angle + (i * (math.pi * 2 / #Players:GetPlayers()))
-                        local x = math.cos(offsetAngle) * radius
-                        local z = math.sin(offsetAngle) * radius
-                        
-                        hrp.CFrame = RootPart.CFrame + Vector3.new(x, 5, z)
-                        i = i + 1
-                    end
+        self.Connections["Orbit_" .. player.UserId] = RunService.Heartbeat:Connect(function()
+            if player.Character and RootPart then
+                local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+                if hrp then
+                    angle = angle + 0.05
+                    local x = math.cos(angle) * self.Settings.OrbitRadius
+                    local z = math.sin(angle) * self.Settings.OrbitRadius
+                    hrp.CFrame = RootPart.CFrame + Vector3.new(x, 5, z)
                 end
             end
         end)
+        
+        self:SendFakeChatForPlayer(player, "Orbit")
     else
-        if self.Connections.Orbit then
-            self.Connections.Orbit:Disconnect()
+        if self.Connections["Orbit_" .. player.UserId] then
+            self.Connections["Orbit_" .. player.UserId]:Disconnect()
+            self.Connections["Orbit_" .. player.UserId] = nil
         end
     end
 end
 
--- Spam Explosions
-function Zenux:SpamExplosions(enabled)
+function Zenux:ShrinkPlayer(player, scale)
+    if player.Character then
+        local humanoid = player.Character:FindFirstChild("Humanoid")
+        if humanoid then
+            for _, obj in pairs(player.Character:GetDescendants()) do
+                if obj:IsA("BasePart") then
+                    obj.Size = obj.Size * scale
+                end
+            end
+        end
+    end
+end
+
+function Zenux:PlatformPlayer(player, enabled)
     if enabled then
-        self.Connections.Explosions = RunService.Heartbeat:Connect(function()
-            task.wait(0.5)
-            for _, player in pairs(Players:GetPlayers()) do
-                if player ~= Player and player.Character then
-                    local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-                    if hrp then
-                        local exp = Instance.new("Explosion")
-                        exp.Position = hrp.Position
-                        exp.BlastRadius = 10
-                        exp.Parent = Workspace
-                    end
-                end
-            end
-        end)
-    else
-        if self.Connections.Explosions then
-            self.Connections.Explosions:Disconnect()
-        end
-    end
-end
-
--- Cage Player
-function Zenux:CagePlayer(playerName)
-    for _, player in pairs(Players:GetPlayers()) do
-        if player.Name:lower():find(playerName:lower()) and player.Character then
+        if player.Character then
             local hrp = player.Character:FindFirstChild("HumanoidRootPart")
             if hrp then
-                local cage = Instance.new("Model")
-                cage.Name = "ZenuxCage"
+                local platform = Instance.new("Part")
+                platform.Name = "ZenuxPlatform_" .. player.UserId
+                platform.Size = Vector3.new(8, 1, 8)
+                platform.Anchored = true
+                platform.BrickColor = BrickColor.new("Bright blue")
+                platform.Material = Enum.Material.Neon
+                platform.Parent = Workspace
                 
-                for i = 1, 6 do
-                    local wall = Instance.new("Part")
-                    wall.Size = Vector3.new(10, 10, 1)
-                    wall.Anchored = true
-                    wall.BrickColor = BrickColor.new("Really black")
-                    
-                    if i == 1 then wall.Position = hrp.Position + Vector3.new(0, 0, 5) end
-                    if i == 2 then wall.Position = hrp.Position + Vector3.new(0, 0, -5) end
-                    if i == 3 then 
-                        wall.Size = Vector3.new(1, 10, 10)
-                        wall.Position = hrp.Position + Vector3.new(5, 0, 0) 
-                    end
-                    if i == 4 then 
-                        wall.Size = Vector3.new(1, 10, 10)
-                        wall.Position = hrp.Position + Vector3.new(-5, 0, 0) 
-                    end
-                    if i == 5 then 
-                        wall.Size = Vector3.new(10, 1, 10)
-                        wall.Position = hrp.Position + Vector3.new(0, 5, 0) 
-                    end
-                    if i == 6 then 
-                        wall.Size = Vector3.new(10, 1, 10)
-                        wall.Position = hrp.Position + Vector3.new(0, -5, 0) 
-                    end
-                    
-                    wall.Parent = cage
-                end
-                
-                cage.Parent = Workspace
-                self:Notify("Cage", player.Name .. " foi aprisionado!", 2)
-                return
-            end
-        end
-    end
-end
-
--- Platform Under Players
-function Zenux:PlatformUnderPlayers(enabled)
-    if enabled then
-        self.Connections.Platform = RunService.Heartbeat:Connect(function()
-            for _, player in pairs(Players:GetPlayers()) do
-                if player.Character then
-                    local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-                    if hrp then
-                        local platform = hrp:FindFirstChild("ZenuxPlatform") or Instance.new("Part")
-                        platform.Name = "ZenuxPlatform"
-                        platform.Size = Vector3.new(8, 1, 8)
+                self.Connections["Platform_" .. player.UserId] = RunService.Heartbeat:Connect(function()
+                    if hrp.Parent then
                         platform.Position = hrp.Position - Vector3.new(0, 4, 0)
-                        platform.Anchored = true
-                        platform.BrickColor = BrickColor.Random()
-                        platform.Material = Enum.Material.Neon
-                        platform.Parent = hrp
                     end
-                end
+                end)
             end
-        end)
+        end
     else
-        if self.Connections.Platform then
-            self.Connections.Platform:Disconnect()
+        if self.Connections["Platform_" .. player.UserId] then
+            self.Connections["Platform_" .. player.UserId]:Disconnect()
+            self.Connections["Platform_" .. player.UserId] = nil
         end
-        for _, player in pairs(Players:GetPlayers()) do
-            if player.Character then
-                local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-                if hrp and hrp:FindFirstChild("ZenuxPlatform") then
-                    hrp.ZenuxPlatform:Destroy()
-                end
-            end
+        if Workspace:FindFirstChild("ZenuxPlatform_" .. player.UserId) then
+            Workspace["ZenuxPlatform_" .. player.UserId]:Destroy()
         end
     end
 end
 
--- Ragdoll All
-function Zenux:RagdollAll(enabled)
-    if enabled then
-        for _, player in pairs(Players:GetPlayers()) do
-            if player ~= Player and player.Character then
-                local humanoid = player.Character:FindFirstChild("Humanoid")
-                if humanoid then
-                    humanoid:ChangeState(Enum.HumanoidStateType.Physics)
-                end
-            end
-        end
-    end
-end
-
--- Spam Sounds
-function Zenux:SpamSounds(enabled, soundId)
-    if enabled then
-        self.Connections.SpamSound = RunService.Heartbeat:Connect(function()
-            task.wait(0.1)
-            local sound = Instance.new("Sound")
-            sound.SoundId = "rbxassetid://" .. (soundId or "6026984224")
-            sound.Volume = 10
-            sound.Parent = Workspace
-            sound:Play()
+function Zenux:BlackHolePlayer(player)
+    if player.Character then
+        local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            local blackHole = Instance.new("Part")
+            blackHole.Shape = Enum.PartType.Ball
+            blackHole.Size = Vector3.new(10, 10, 10)
+            blackHole.Position = hrp.Position + Vector3.new(0, 20, 0)
+            blackHole.BrickColor = BrickColor.new("Really black")
+            blackHole.Material = Enum.Material.Neon
+            blackHole.Anchored = true
+            blackHole.CanCollide = false
+            blackHole.Parent = Workspace
             
-            task.delay(2, function()
-                sound:Destroy()
+            local conn
+            conn = RunService.Heartbeat:Connect(function()
+                if hrp.Parent then
+                    local direction = (blackHole.Position - hrp.Position).Unit
+                    hrp.Velocity = direction * 80
+                end
             end)
-        end)
-    else
-        if self.Connections.SpamSound then
-            self.Connections.SpamSound:Disconnect()
+            
+            task.delay(5, function()
+                conn:Disconnect()
+                blackHole:Destroy()
+            end)
+            
+            self:SendFakeChatForPlayer(player, "BlackHole")
         end
     end
 end
 
--- Black Hole Effect
-function Zenux:BlackHole(enabled)
-    if enabled then
-        local blackHole = Instance.new("Part")
-        blackHole.Name = "ZenuxBlackHole"
-        blackHole.Size = Vector3.new(20, 20, 20)
-        blackHole.Position = RootPart.Position + Vector3.new(0, 30, 0)
-        blackHole.Shape = Enum.PartType.Ball
-        blackHole.BrickColor = BrickColor.new("Really black")
-        blackHole.Material = Enum.Material.Neon
-        blackHole.Anchored = true
-        blackHole.CanCollide = false
-        blackHole.Parent = Workspace
+function Zenux:TornadoPlayer(player)
+    if player.Character then
+        local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            local tornado = Instance.new("Part")
+            tornado.Shape = Enum.PartType.Cylinder
+            tornado.Size = Vector3.new(20, 50, 20)
+            tornado.Position = hrp.Position
+            tornado.BrickColor = BrickColor.new("Light stone grey")
+            tornado.Material = Enum.Material.ForceField
+            tornado.Anchored = true
+            tornado.CanCollide = false
+            tornado.Transparency = 0.5
+            tornado.Parent = Workspace
+            
+            local conn
+            conn = RunService.Heartbeat:Connect(function()
+                if hrp.Parent then
+                    tornado.CFrame = CFrame.new(hrp.Position) * CFrame.Angles(0, 0.1, 0)
+                    hrp.Velocity = Vector3.new(
+                        math.random(-50, 50),
+                        100,
+                        math.random(-50, 50)
+                    )
+                end
+            end)
+            
+            task.delay(5, function()
+                conn:Disconnect()
+                tornado:Destroy()
+            end)
+            
+            self:SendFakeChatForPlayer(player, "Tornado")
+        end
+    end
+end
+
+function Zenux:ClonePlayer(player, amount)
+    if player.Character then
+        for i = 1, amount or 5 do
+            local clone = player.Character:Clone()
+            clone.Parent = Workspace
+            clone:MoveTo(player.Character.HumanoidRootPart.Position + Vector3.new(
+                math.random(-10, 10),
+                0,
+                math.random(-10, 10)
+            ))
+        end
         
-        self.Connections.BlackHole = RunService.Heartbeat:Connect(function()
-            for _, player in pairs(Players:GetPlayers()) do
-                if player.Character then
-                    local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-                    if hrp then
-                        local direction = (blackHole.Position - hrp.Position).Unit
-                        hrp.Velocity = direction * 100
+        self:SendFakeChatForPlayer(player, "Clone")
+    end
+end
+
+function Zenux:EarthquakePlayer(player)
+    if player.Character then
+        local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            for i = 1, 30 do
+                task.spawn(function()
+                    hrp.CFrame = hrp.CFrame * CFrame.new(
+                        math.random(-2, 2),
+                        math.random(-1, 1),
+                        math.random(-2, 2)
+                    )
+                end)
+                task.wait(0.05)
+            end
+        end
+    end
+end
+
+function Zenux:DiscoPlayer(player, enabled)
+    if enabled then
+        self.Connections["Disco_" .. player.UserId] = RunService.Heartbeat:Connect(function()
+            if player.Character then
+                for _, part in pairs(player.Character:GetDescendants()) do
+                    if part:IsA("BasePart") then
+                        part.Color = Color3.fromRGB(
+                            math.random(0, 255),
+                            math.random(0, 255),
+                            math.random(0, 255)
+                        )
                     end
                 end
             end
+            task.wait(0.1)
         end)
     else
-        if self.Connections.BlackHole then
-            self.Connections.BlackHole:Disconnect()
-        end
-        if Workspace:FindFirstChild("ZenuxBlackHole") then
-            Workspace.ZenuxBlackHole:Destroy()
+        if self.Connections["Disco_" .. player.UserId] then
+            self.Connections["Disco_" .. player.UserId]:Disconnect()
+            self.Connections["Disco_" .. player.UserId] = nil
         end
     end
+end
+
+-- BATCH OPERATIONS
+function Zenux:BatchOperation(operation, ...)
+    local selected = self:GetSelectedPlayers()
+    if #selected == 0 then
+        self:Notify("Error", "No players selected", 2)
+        return
+    end
+    
+    for _, player in pairs(selected) do
+        if player ~= Player then
+            operation(self, player, ...)
+        end
+    end
+    
+    self:Notify("Batch", "Applied to " .. #selected .. " players", 2)
 end
 
 -- MOVEMENT FUNCTIONS
+function Zenux:Fly(enabled)
+    if enabled then
+        local BV = Instance.new("BodyVelocity")
+        local BG = Instance.new("BodyGyro")
+        
+        BV.Name = "ZenuxFly"
+        BG.Name = "ZenuxFly"
+        BV.Parent = RootPart
+        BG.Parent = RootPart
+        
+        BV.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+        BG.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
+        BG.P = 10000
+        
+        self.Connections.Fly = RunService.Heartbeat:Connect(function()
+            local direction = Vector3.new()
+            
+            if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+                direction = direction + Camera.CFrame.LookVector
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+                direction = direction - Camera.CFrame.LookVector
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+                direction = direction - Camera.CFrame.RightVector
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+                direction = direction + Camera.CFrame.RightVector
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+                direction = direction + Vector3.new(0, 1, 0)
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
+                direction = direction - Vector3.new(0, 1, 0)
+            end
+            
+            BV.Velocity = direction * self.Settings.FlySpeed
+            BG.CFrame = Camera.CFrame
+        end)
+    else
+        for _, obj in pairs(RootPart:GetChildren()) do
+            if obj.Name == "ZenuxFly" then obj:Destroy() end
+        end
+        if self.Connections.Fly then
+            self.Connections.Fly:Disconnect()
+        end
+    end
+end
 
 function Zenux:NoClip(enabled)
     if enabled then
@@ -532,707 +807,492 @@ function Zenux:NoClip(enabled)
     end
 end
 
-function Zenux:Fly(enabled, speed)
-    speed = speed or 100
+-- MODERN UI LIBRARY (Blue/Black Theme)
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+local Window = Library.CreateLib("ZENUX ULTRA v" .. Zenux.Version, "BloodTheme")
+
+-- PLAYER SELECTOR TAB
+local SelectorTab = Window:NewTab("Player Selector")
+local PlayerListSection = SelectorTab:NewSection("Active Players")
+
+local function UpdatePlayerList()
+    PlayerListSection = SelectorTab:NewSection("Players Online: " .. #Players:GetPlayers())
     
-    if enabled then
-        local BV = Instance.new("BodyVelocity")
-        local BG = Instance.new("BodyGyro")
+    for _, player in pairs(Players:GetPlayers()) do
+        local isSelected = Zenux.SelectedPlayers[player] or false
         
-        BV.Name = "ZenuxFly"
-        BG.Name = "ZenuxFly"
-        BV.Parent = RootPart
-        BG.Parent = RootPart
-        
-        BV.MaxForce = Vector3.new(9e9, 9e9, 9e9)
-        BG.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
-        BG.P = 10000
-        
-        self:NoClip(true)
-        
-        self.Connections.Fly = RunService.Heartbeat:Connect(function()
-            local cam = Camera
-            local direction = Vector3.new()
-            
-            if UserInputService:IsKeyDown(Enum.KeyCode.W) then
-                direction = direction + cam.CFrame.LookVector
+        PlayerListSection:NewButton(
+            (isSelected and "[X] " or "[ ] ") .. player.DisplayName .. " (@" .. player.Name .. ")",
+            "ID: " .. player.UserId,
+            function()
+                Zenux.SelectedPlayers[player] = not Zenux.SelectedPlayers[player]
+                UpdatePlayerList()
+                Zenux:Notify(
+                    "Selection",
+                    player.Name .. (Zenux.SelectedPlayers[player] and " selected" or " deselected"),
+                    2
+                )
             end
-            if UserInputService:IsKeyDown(Enum.KeyCode.S) then
-                direction = direction - cam.CFrame.LookVector
-            end
-            if UserInputService:IsKeyDown(Enum.KeyCode.A) then
-                direction = direction - cam.CFrame.RightVector
-            end
-            if UserInputService:IsKeyDown(Enum.KeyCode.D) then
-                direction = direction + cam.CFrame.RightVector
-            end
-            if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
-                direction = direction + Vector3.new(0, 1, 0)
-            end
-            if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
-                direction = direction - Vector3.new(0, 1, 0)
-            end
-            
-            BV.Velocity = direction * speed
-            BG.CFrame = cam.CFrame
-        end)
-    else
-        for _, obj in pairs(RootPart:GetChildren()) do
-            if obj.Name == "ZenuxFly" then
-                obj:Destroy()
-            end
-        end
-        if self.Connections.Fly then
-            self.Connections.Fly:Disconnect()
-        end
-        self:NoClip(false)
+        )
     end
+    
+    PlayerListSection:NewButton("Select All Players", "Select everyone", function()
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= Player then
+                Zenux.SelectedPlayers[player] = true
+            end
+        end
+        UpdatePlayerList()
+    end)
+    
+    PlayerListSection:NewButton("Deselect All", "Clear selection", function()
+        Zenux.SelectedPlayers = {}
+        UpdatePlayerList()
+    end)
 end
 
--- UI LIBRARY
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
-local Window = Library.CreateLib("ZENUX Troll Hub v" .. Zenux.Version, "Midnight")
+UpdatePlayerList()
 
--- MAIN TAB
-local MainTab = Window:NewTab("Main")
-local InfoSection = MainTab:NewSection("Information")
+Players.PlayerAdded:Connect(function() task.wait(1) UpdatePlayerList() end)
+Players.PlayerRemoving:Connect(function() task.wait(1) UpdatePlayerList() end)
 
-InfoSection:NewLabel("Welcome to ZENUX Troll Hub")
-InfoSection:NewLabel("Player: " .. Player.Name)
-InfoSection:NewLabel("Version: " .. Zenux.Version)
+-- QUICK ACTIONS TAB
+local QuickTab = Window:NewTab("Quick Actions")
+local QuickSection = QuickTab:NewSection("Fast Troll")
 
-InfoSection:NewButton("Destroy GUI", "Remove interface", function()
-    for _, conn in pairs(Zenux.Connections) do
-        if conn then conn:Disconnect() end
-    end
-    Library:ToggleUI()
+QuickSection:NewButton("Launch Selected", "Send to sky", function()
+    Zenux:BatchOperation(Zenux.LaunchPlayer, Zenux.Settings.LaunchHeight)
 end)
 
--- PLAYER TROLL TAB
-local PlayerTrollTab = Window:NewTab("Player Troll")
-local TargetSection = PlayerTrollTab:NewSection("Target Player")
-
-local targetPlayer = ""
-
-TargetSection:NewTextBox("Player Name", "Digite o nome", function(txt)
-    targetPlayer = txt
+QuickSection:NewButton("Explode Selected", "Explosion attack", function()
+    Zenux:BatchOperation(Zenux.ExplodePlayer, Zenux.Settings.ExplosionSize)
 end)
 
-TargetSection:NewButton("Rocket To Player", "Voa ate o player", function()
-    if targetPlayer ~= "" then
-        Zenux:RocketPlayer(targetPlayer)
-    end
+QuickSection:NewButton("Spin Selected", "Infinite rotation", function()
+    Zenux:BatchOperation(Zenux.SpinPlayer, Zenux.Settings.SpinSpeed)
 end)
 
-TargetSection:NewButton("Explode Player", "Explode o player", function()
-    if targetPlayer ~= "" then
-        Zenux:ExplodePlayer(targetPlayer)
-    end
+QuickSection:NewButton("Fling Selected", "Throw away", function()
+    Zenux:BatchOperation(Zenux.FlingPlayer, Zenux.Settings.FlingPower)
 end)
 
-TargetSection:NewButton("Cage Player", "Prende em gaiola", function()
-    if targetPlayer ~= "" then
-        Zenux:CagePlayer(targetPlayer)
-    end
+QuickSection:NewButton("TP to You", "Bring here", function()
+    Zenux:BatchOperation(Zenux.TeleportToYou)
 end)
 
--- ALL PLAYERS TAB
-local AllPlayersTab = Window:NewTab("All Players")
-local MassSection = AllPlayersTab:NewSection("Mass Trolling")
-
-MassSection:NewToggle("TP All To You", "Teleporta todos", function(state)
-    Zenux:TeleportAllPlayers(state)
+QuickSection:NewButton("Attach Selected", "Stick to you", function()
+    Zenux:BatchOperation(Zenux.AttachPlayer)
 end)
 
-MassSection:NewToggle("Spin All Players", "Gira todos", function(state)
-    Zenux:SpinAllPlayers(state)
+QuickSection:NewButton("Freeze Selected", "Lock movement", function()
+    Zenux:BatchOperation(Zenux.FreezePlayer, true)
 end)
 
-MassSection:NewToggle("Fling All Players", "Lanca todos", function(state)
-    Zenux:FlingAllPlayers(state)
+QuickSection:NewButton("Unfreeze Selected", "Unlock movement", function()
+    Zenux:BatchOperation(Zenux.FreezePlayer, false)
 end)
 
-MassSection:NewButton("Launch All Players", "Lanca todos no ar", function()
-    Zenux:LaunchAllPlayers()
+QuickSection:NewButton("Cage Selected", "Trap in box", function()
+    Zenux:BatchOperation(Zenux.CagePlayer)
 end)
 
-MassSection:NewToggle("Freeze All Players", "Congela todos", function(state)
-    Zenux:FreezeAllPlayers(state)
+QuickSection:NewButton("Invisible Selected", "Make transparent", function()
+    Zenux:BatchOperation(Zenux.InvisiblePlayer, true)
 end)
 
-MassSection:NewToggle("Attach All Players", "Gruda todos em voce", function(state)
-    Zenux:AttachAllPlayers(state)
+-- ADVANCED TROLL TAB
+local AdvancedTab = Window:NewTab("Advanced Troll")
+local AdvSection = AdvancedTab:NewSection("Special Effects")
+
+AdvSection:NewButton("Tornado Selected", "Wind vortex", function()
+    Zenux:BatchOperation(Zenux.TornadoPlayer)
 end)
 
-local AdvancedSection = AllPlayersTab:NewSection("Advanced Trolling")
-
-AdvancedSection:NewToggle("Orbit Players", "Players orbitam voce", function(state)
-    Zenux:OrbitPlayers(state)
+AdvSection:NewButton("Black Hole Selected", "Gravity pull", function()
+    Zenux:BatchOperation(Zenux.BlackHolePlayer)
 end)
 
-AdvancedSection:NewToggle("Spam Explosions", "Explosoes continuas", function(state)
-    Zenux:SpamExplosions(state)
+AdvSection:NewButton("Clone x5", "Duplicate players", function()
+    Zenux:BatchOperation(Zenux.ClonePlayer, 5)
 end)
 
-AdvancedSection:NewToggle("Platform Under All", "Plataforma sob todos", function(state)
-    Zenux:PlatformUnderPlayers(state)
+AdvSection:NewButton("Clone x20", "Mass duplicate", function()
+    Zenux:BatchOperation(Zenux.ClonePlayer, 20)
 end)
 
-AdvancedSection:NewButton("Ragdoll All Players", "Ragdoll em todos", function()
-    Zenux:RagdollAll(true)
+AdvSection:NewButton("Earthquake Selected", "Shake effect", function()
+    Zenux:BatchOperation(Zenux.EarthquakePlayer)
 end)
 
-AdvancedSection:NewToggle("Black Hole Effect", "Buraco negro", function(state)
-    Zenux:BlackHole(state)
-end)
-
--- SELF TROLL TAB
-local SelfTrollTab = Window:NewTab("Self Troll")
-local SelfSection = SelfTrollTab:NewSection("Self Trolling")
-
-SelfSection:NewToggle("Super Fling", "Fling extremo", function(state)
-    Zenux:SuperFling(state)
-end)
-
-SelfSection:NewSlider("Fling Power", "Poder do fling", 5000, 100, function(v)
-    Zenux.Settings.FlingPower = v
-end)
-
-SelfSection:NewSlider("Head Size", "Tamanho da cabeca", 100, 1, function(v)
-    if Head then
-        Head.Size = Vector3.new(v, v, v)
-        Head.Transparency = v > 20 and 0.5 or 0
+AdvSection:NewButton("Rocket to Selected", "Fly to targets", function()
+    for _, player in pairs(Zenux:GetSelectedPlayers()) do
+        Zenux:RocketPlayer(player)
+        task.wait(0.5)
     end
 end)
 
-SelfSection:NewButton("Clone Spam", "Clones multiplos", function()
-    for i = 1, 10 do
-        local clone = Character:Clone()
-        clone.Parent = Workspace
-        clone:MoveTo(RootPart.Position + Vector3.new(math.random(-20, 20), 0, math.random(-20, 20)))
+AdvSection:NewButton("Ragdoll Selected", "Disable standing", function()
+    Zenux:BatchOperation(Zenux.RagdollPlayer)
+end)
+
+AdvSection:NewToggle("Orbit Selected", "Rotate around you", function(state)
+    for _, player in pairs(Zenux:GetSelectedPlayers()) do
+        Zenux:OrbitPlayer(player, state)
     end
 end)
 
-SelfSection:NewButton("Invisible", "Ficar invisivel", function()
-    for _, part in pairs(Character:GetDescendants()) do
-        if part:IsA("BasePart") then
-            part.Transparency = 1
+AdvSection:NewToggle("Platform Under Selected", "Floor below", function(state)
+    for _, player in pairs(Zenux:GetSelectedPlayers()) do
+        Zenux:PlatformPlayer(player, state)
+    end
+end)
+
+AdvSection:NewToggle("Disco Mode", "Rainbow effect", function(state)
+    for _, player in pairs(Zenux:GetSelectedPlayers()) do
+        Zenux:DiscoPlayer(player, state)
+    end
+end)
+
+-- CHAOS MODE TAB
+local ChaosTab = Window:NewTab("Chaos Mode")
+local ChaosSection = ChaosTab:NewSection("Ultimate Destruction")
+
+ChaosSection:NewButton("APOCALYPSE MODE", "Total chaos", function()
+    Zenux:Notify("CHAOS", "APOCALYPSE STARTED", 3)
+    
+    for i = 1, 3 do
+        Zenux:BatchOperation(Zenux.LaunchPlayer, 1000)
+        task.wait(1)
+        Zenux:BatchOperation(Zenux.ExplodePlayer, 50)
+        task.wait(1)
+        Zenux:BatchOperation(Zenux.SpinPlayer, 200)
+        task.wait(1)
+    end
+end)
+
+ChaosSection:NewButton("TORNADO SPAM", "Multiple tornados", function()
+    for i = 1, 5 do
+        for _, player in pairs(Zenux:GetSelectedPlayers()) do
+            Zenux:TornadoPlayer(player)
         end
+        task.wait(2)
     end
 end)
 
-SelfSection:NewButton("Visible", "Ficar visivel", function()
-    for _, part in pairs(Character:GetDescendants()) do
-        if part:IsA("BasePart") then
-            part.Transparency = 0
-        end
-    end
-end)
-
--- WORLD TROLL TAB
-local WorldTab = Window:NewTab("World Troll")
-local WorldSection = WorldTab:NewSection("World Effects")
-
-WorldSection:NewToggle("Spam Sounds", "Spam de sons", function(state)
-    Zenux:SpamSounds(state)
-end)
-
-WorldSection:NewButton("Disco Mode", "Modo disco", function()
-    for i = 1, 50 do
-        Lighting.Ambient = Color3.fromRGB(math.random(0, 255), math.random(0, 255), math.random(0, 255))
-        task.wait(0.1)
-    end
-end)
-
-WorldSection:NewButton("Earthquake", "Terremoto", function()
-    for i = 1, 50 do
-        Camera.CFrame = Camera.CFrame * CFrame.Angles(math.rad(math.random(-5, 5)), math.rad(math.random(-5, 5)), 0)
-        task.wait(0.05)
-    end
-end)
-
-WorldSection:NewButton("Spawn Barriers", "Barreiras aleatorias", function()
+ChaosSection:NewButton("EXPLOSION SPAM", "Massive explosions", function()
     for i = 1, 20 do
-        local wall = Instance.new("Part")
-        wall.Size = Vector3.new(20, 20, 2)
-        wall.Position = RootPart.Position + Vector3.new(math.random(-100, 100), 10, math.random(-100, 100))
-        wall.Anchored = true
-        wall.BrickColor = BrickColor.Random()
-        wall.Parent = Workspace
+        for _, player in pairs(Zenux:GetSelectedPlayers()) do
+            Zenux:ExplodePlayer(player, 30)
+        end
+        task.wait(0.5)
     end
 end)
 
-WorldSection:NewButton("Spam Explosions Random", "Explosoes aleatorias", function()
+ChaosSection:NewButton("CLONE ARMY", "Massive clones", function()
+    for _, player in pairs(Zenux:GetSelectedPlayers()) do
+        Zenux:ClonePlayer(player, 20)
+    end
+end)
+
+ChaosSection:NewButton("SPIN MADNESS", "Random spinning", function()
     for i = 1, 30 do
-        local exp = Instance.new("Explosion")
-        exp.Position = RootPart.Position + Vector3.new(math.random(-50, 50), 0, math.random(-50, 50))
-        exp.BlastRadius = 20
-        exp.Parent = Workspace
-        task.wait(0.2)
+        Zenux:BatchOperation(Zenux.SpinPlayer, math.random(100, 300))
+        task.wait(0.5)
+    end
+end)
+
+ChaosSection:NewButton("VOID ALL", "Send to void", function()
+    for _, player in pairs(Zenux:GetSelectedPlayers()) do
+        if player.Character then
+            local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+            if hrp then
+                hrp.CFrame = CFrame.new(0, -1000, 0)
+            end
+        end
     end
 end)
 
 -- MOVEMENT TAB
 local MovementTab = Window:NewTab("Movement")
-local MoveSection = MovementTab:NewSection("Movement Controls")
+local MoveSection = MovementTab:NewSection("Player Controls")
 
-MoveSection:NewSlider("WalkSpeed", "Velocidade", 500, 16, function(v)
-    if Humanoid then
-        Humanoid.WalkSpeed = v
-    end
+MoveSection:NewSlider("Walk Speed", "Movement speed", 500, 16, function(v)
+    if Humanoid then Humanoid.WalkSpeed = v end
 end)
 
-MoveSection:NewSlider("JumpPower", "Pulo", 500, 50, function(v)
-    if Humanoid then
-        Humanoid.JumpPower = v
-    end
+MoveSection:NewSlider("Jump Power", "Jump height", 500, 50, function(v)
+    if Humanoid then Humanoid.JumpPower = v end
 end)
 
-MoveSection:NewToggle("Fly", "Modo voo", function(state)
-    Zenux:Fly(state, Zenux.Settings.FlySpeed)
+MoveSection:NewToggle("Fly Mode", "Enable flying", function(state)
+    Zenux:Fly(state)
 end)
 
-MoveSection:NewSlider("Fly Speed", "Velocidade voo", 300, 50, function(v)
+MoveSection:NewSlider("Fly Speed", "Flight speed", 300, 50, function(v)
     Zenux.Settings.FlySpeed = v
 end)
 
-MoveSection:NewToggle("NoClip", "Atravessar paredes", function(state)
+MoveSection:NewToggle("NoClip", "Walk through walls", function(state)
     Zenux:NoClip(state)
 end)
 
-MoveSection:NewSlider("Gravity", "Gravidade", 500, 196, function(v)
+MoveSection:NewSlider("Gravity", "World gravity", 500, 196, function(v)
     Workspace.Gravity = v
+end)
+
+MoveSection:NewButton("Infinite Jump", "Jump forever", function()
+    local InfiniteJumpEnabled = true
+    UserInputService.JumpRequest:Connect(function()
+        if InfiniteJumpEnabled and Humanoid then
+            Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+        end
+    end)
 end)
 
 -- VISUAL TAB
 local VisualTab = Window:NewTab("Visual")
-local VisualSection = VisualTab:NewSection("Visual Effects")
+local VisSection = VisualTab:NewSection("Visual Effects")
 
-VisualSection:NewToggle("Fullbright", "Iluminacao maxima", function(state)
+VisSection:NewToggle("Fullbright", "Max lighting", function(state)
     if state then
         Lighting.Brightness = 2
         Lighting.ClockTime = 14
         Lighting.FogEnd = 9e9
-        Lighting.GlobalShadows = false
     else
         Lighting.Brightness = 1
         Lighting.ClockTime = 12
-        Lighting.GlobalShadows = true
     end
 end)
 
-VisualSection:NewButton("Remove Textures", "Remove texturas", function()
+VisSection:NewSlider("FOV", "Field of view", 120, 70, function(v)
+    Camera.FieldOfView = v
+end)
+
+VisSection:NewButton("ESP Players", "See through walls", function()
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= Player and player.Character then
+            for _, part in pairs(player.Character:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    local highlight = Instance.new("Highlight")
+                    highlight.FillColor = Color3.fromRGB(0, 150, 255)
+                    highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+                    highlight.Parent = part
+                end
+            end
+        end
+    end
+end)
+
+VisSection:NewButton("Rainbow World", "Colorful map", function()
+    for _, obj in pairs(Workspace:GetDescendants()) do
+        if obj:IsA("BasePart") then
+            obj.Material = Enum.Material.Neon
+            obj.Color = Color3.fromRGB(math.random(0,255), math.random(0,255), math.random(0,255))
+        end
+    end
+end)
+
+VisSection:NewButton("Remove Textures", "Clean visuals", function()
     for _, obj in pairs(Workspace:GetDescendants()) do
         if obj:IsA("Decal") or obj:IsA("Texture") then
             obj:Destroy()
         end
     end
-    Zenux:Notify("Visual", "Texturas removidas", 2)
-end)
-
-VisualSection:NewButton("Neon Everything", "Tudo neon", function()
-    for _, obj in pairs(Workspace:GetDescendants()) do
-        if obj:IsA("BasePart") then
-            obj.Material = Enum.Material.Neon
-            obj.Color = Color3.fromRGB(math.random(0, 255), math.random(0, 255), math.random(0, 255))
-        end
-    end
-end)
-
-VisualSection:NewSlider("FOV", "Campo de visao", 120, 70, function(v)
-    Camera.FieldOfView = v
-end)
-
-VisualSection:NewButton("Trippy Mode", "Modo trippy", function()
-    for i = 1, 100 do
-        Camera.FieldOfView = math.random(30, 120)
-        Lighting.Ambient = Color3.fromRGB(math.random(0, 255), math.random(0, 255), math.random(0, 255))
-        task.wait(0.1)
-    end
-    Camera.FieldOfView = 70
 end)
 
 -- TELEPORT TAB
-local TeleportTab = Window:NewTab("Teleport")
-local TPSection = TeleportTab:NewSection("Teleport Options")
+local TPTab = Window:NewTab("Teleport")
+local TPSection = TPTab:NewSection("Teleport Options")
 
-TPSection:NewButton("TP to Random Player", "TP aleatorio", function()
-    local players = Players:GetPlayers()
-    local randomPlayer = players[math.random(1, #players)]
-    if randomPlayer ~= Player and randomPlayer.Character then
-        RootPart.CFrame = randomPlayer.Character.HumanoidRootPart.CFrame
+TPSection:NewButton("TP to Random Selected", "Random target", function()
+    local selected = Zenux:GetSelectedPlayers()
+    if #selected > 0 then
+        local random = selected[math.random(1, #selected)]
+        Zenux:TeleportToPlayer(random)
     end
 end)
 
-TPSection:NewButton("TP to Mouse", "TP para mouse", function()
-    RootPart.CFrame = CFrame.new(Mouse.Hit.Position + Vector3.new(0, 3, 0))
+TPSection:NewButton("TP All to You", "Bring everyone", function()
+    Zenux:BatchOperation(Zenux.TeleportToYou)
 end)
 
-TPSection:NewButton("TP Everyone to You", "Todos para voce", function()
-    for _, player in pairs(Players:GetPlayers()) do
-        if player ~= Player and player.Character then
-            local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-            if hrp then
-                hrp.CFrame = RootPart.CFrame
-            end
-        end
+TPSection:NewButton("TP to Mouse", "Cursor position", function()
+    if RootPart then
+        RootPart.CFrame = CFrame.new(Mouse.Hit.Position + Vector3.new(0, 3, 0))
     end
 end)
 
-TPSection:NewButton("TP All to Random Spot", "Todos para lugar aleatorio", function()
-    local randomPos = Vector3.new(math.random(-500, 500), 50, math.random(-500, 500))
-    for _, player in pairs(Players:GetPlayers()) do
+TPSection:NewButton("TP All to Void", "Send down", function()
+    for _, player in pairs(Zenux:GetSelectedPlayers()) do
         if player.Character then
             local hrp = player.Character:FindFirstChild("HumanoidRootPart")
             if hrp then
-                hrp.CFrame = CFrame.new(randomPos)
+                hrp.CFrame = CFrame.new(0, -1000, 0)
             end
         end
     end
 end)
 
--- SPAWN TAB
-local SpawnTab = Window:NewTab("Spawn")
-local SpawnSection = SpawnTab:NewSection("Spawn Objects")
-
-SpawnSection:NewButton("Spawn Wall of Death", "Parede mortal", function()
-    local wall = Instance.new("Part")
-    wall.Size = Vector3.new(100, 50, 5)
-    wall.Position = RootPart.Position + Vector3.new(0, 0, 30)
-    wall.BrickColor = BrickColor.new("Really red")
-    wall.Material = Enum.Material.Neon
-    wall.Anchored = true
-    wall.Parent = Workspace
+TPSection:NewButton("Circle Formation", "Arrange in circle", function()
+    local selected = Zenux:GetSelectedPlayers()
+    local radius = 20
+    local angleStep = (2 * math.pi) / #selected
     
-    local bv = Instance.new("BodyVelocity")
-    bv.MaxForce = Vector3.new(9e9, 0, 9e9)
-    bv.Velocity = (RootPart.Position - wall.Position).Unit * 50
-    bv.Parent = wall
-    
-    wall.Touched:Connect(function(hit)
-        if hit.Parent:FindFirstChild("Humanoid") then
-            hit.Parent.Humanoid.Health = 0
-        end
-    end)
-end)
-
-SpawnSection:NewButton("Spawn Tornado", "Tornado", function()
-    local tornado = Instance.new("Part")
-    tornado.Size = Vector3.new(30, 100, 30)
-    tornado.Position = RootPart.Position + Vector3.new(0, 50, 50)
-    tornado.Shape = Enum.PartType.Cylinder
-    tornado.BrickColor = BrickColor.new("Dark stone grey")
-    tornado.Material = Enum.Material.ForceField
-    tornado.Anchored = true
-    tornado.CanCollide = false
-    tornado.Transparency = 0.3
-    tornado.Parent = Workspace
-    
-    local spin = 0
-    local connection
-    connection = RunService.Heartbeat:Connect(function()
-        spin = spin + 0.1
-        tornado.CFrame = tornado.CFrame * CFrame.Angles(0, 0.1, 0)
-        
-        for _, player in pairs(Players:GetPlayers()) do
-            if player.Character then
-                local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-                if hrp then
-                    local distance = (tornado.Position - hrp.Position).Magnitude
-                    if distance < 50 then
-                        hrp.Velocity = (tornado.Position - hrp.Position).Unit * 50 + Vector3.new(0, 100, 0)
-                    end
-                end
-            end
-        end
-    end)
-    
-    task.delay(30, function()
-        connection:Disconnect()
-        tornado:Destroy()
-    end)
-end)
-
-SpawnSection:NewButton("Spawn Kill Bricks", "Blocos mortais", function()
-    for i = 1, 20 do
-        local brick = Instance.new("Part")
-        brick.Size = Vector3.new(10, 10, 10)
-        brick.Position = RootPart.Position + Vector3.new(math.random(-50, 50), 20, math.random(-50, 50))
-        brick.BrickColor = BrickColor.new("Really black")
-        brick.Material = Enum.Material.Neon
-        brick.Anchored = false
-        brick.Parent = Workspace
-        
-        brick.Touched:Connect(function(hit)
-            if hit.Parent:FindFirstChild("Humanoid") then
-                hit.Parent.Humanoid.Health = 0
-            end
-        end)
-    end
-end)
-
-SpawnSection:NewButton("Spawn Giant Sphere", "Esfera gigante", function()
-    local sphere = Instance.new("Part")
-    sphere.Shape = Enum.PartType.Ball
-    sphere.Size = Vector3.new(50, 50, 50)
-    sphere.Position = RootPart.Position + Vector3.new(0, 30, 0)
-    sphere.BrickColor = BrickColor.Random()
-    sphere.Material = Enum.Material.Neon
-    sphere.Anchored = false
-    sphere.Parent = Workspace
-end)
-
-SpawnSection:NewButton("Spawn Rain of Parts", "Chuva de blocos", function()
-    for i = 1, 50 do
-        task.spawn(function()
-            local part = Instance.new("Part")
-            part.Size = Vector3.new(5, 5, 5)
-            part.Position = RootPart.Position + Vector3.new(math.random(-50, 50), 100, math.random(-50, 50))
-            part.BrickColor = BrickColor.Random()
-            part.Material = Enum.Material.Neon
-            part.Parent = Workspace
-            
-            task.delay(10, function()
-                part:Destroy()
-            end)
-        end)
-        task.wait(0.1)
-    end
-end)
-
--- EXTREME TROLL TAB
-local ExtremeTab = Window:NewTab("Extreme")
-local ExtremeSection = ExtremeTab:NewSection("Extreme Trolling")
-
-ExtremeSection:NewButton("Chaos Mode", "Modo caos total", function()
-    Zenux:Notify("Chaos", "MODO CAOS ATIVADO", 3)
-    
-    -- Launch all
-    Zenux:LaunchAllPlayers()
-    task.wait(1)
-    
-    -- Spin all
-    Zenux:SpinAllPlayers(true)
-    task.wait(2)
-    Zenux:SpinAllPlayers(false)
-    
-    -- Explosions
-    for i = 1, 10 do
-        for _, player in pairs(Players:GetPlayers()) do
-            if player.Character then
-                local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-                if hrp then
-                    local exp = Instance.new("Explosion")
-                    exp.Position = hrp.Position
-                    exp.BlastRadius = 20
-                    exp.Parent = Workspace
-                end
-            end
-        end
-        task.wait(0.5)
-    end
-    
-    -- Disco
-    for i = 1, 20 do
-        Lighting.Ambient = Color3.fromRGB(math.random(0, 255), math.random(0, 255), math.random(0, 255))
-        task.wait(0.1)
-    end
-end)
-
-ExtremeSection:NewButton("Ultimate Fling All", "Fling supremo", function()
-    for _, player in pairs(Players:GetPlayers()) do
-        if player ~= Player and player.Character then
+    for i, player in pairs(selected) do
+        if player.Character and RootPart then
+            local angle = angleStep * i
+            local x = math.cos(angle) * radius
+            local z = math.sin(angle) * radius
             local hrp = player.Character:FindFirstChild("HumanoidRootPart")
             if hrp then
-                for i = 1, 10 do
-                    hrp.Velocity = Vector3.new(math.random(-1000, 1000), 1000, math.random(-1000, 1000))
-                    hrp.RotVelocity = Vector3.new(9e9, 9e9, 9e9)
-                    task.wait(0.1)
-                end
+                hrp.CFrame = RootPart.CFrame + Vector3.new(x, 0, z)
             end
         end
-    end
-end)
-
-ExtremeSection:NewButton("Apocalypse", "Apocalipse", function()
-    -- Spawn tons of explosions
-    for i = 1, 100 do
-        task.spawn(function()
-            local exp = Instance.new("Explosion")
-            exp.Position = RootPart.Position + Vector3.new(math.random(-200, 200), math.random(0, 50), math.random(-200, 200))
-            exp.BlastRadius = 30
-            exp.BlastPressure = 500000
-            exp.Parent = Workspace
-        end)
-        task.wait(0.05)
-    end
-    
-    -- Darken sky
-    Lighting.Brightness = 0
-    Lighting.Ambient = Color3.fromRGB(50, 0, 0)
-    Lighting.OutdoorAmbient = Color3.fromRGB(50, 0, 0)
-end)
-
-ExtremeSection:NewButton("Matrix Mode", "Modo matrix", function()
-    for i = 1, 200 do
-        task.spawn(function()
-            local part = Instance.new("Part")
-            part.Size = Vector3.new(0.5, math.random(5, 20), 0.5)
-            part.Position = RootPart.Position + Vector3.new(math.random(-100, 100), 50, math.random(-100, 100))
-            part.BrickColor = BrickColor.new("Lime green")
-            part.Material = Enum.Material.Neon
-            part.Anchored = true
-            part.Parent = Workspace
-            
-            local bv = Instance.new("BodyVelocity")
-            bv.MaxForce = Vector3.new(0, 9e9, 0)
-            bv.Velocity = Vector3.new(0, -50, 0)
-            part.Anchored = false
-            bv.Parent = part
-            
-            task.delay(5, function()
-                part:Destroy()
-            end)
-        end)
-        task.wait(0.02)
-    end
-end)
-
-ExtremeSection:NewButton("Void Everyone", "Mandar para void", function()
-    for _, player in pairs(Players:GetPlayers()) do
-        if player ~= Player and player.Character then
-            local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-            if hrp then
-                hrp.CFrame = CFrame.new(0, -500, 0)
-            end
-        end
-    end
-end)
-
-ExtremeSection:NewButton("Clone Army", "Exercito de clones", function()
-    for i = 1, 20 do
-        local clone = Character:Clone()
-        clone.Parent = Workspace
-        clone:MoveTo(RootPart.Position + Vector3.new(math.random(-30, 30), 0, math.random(-30, 30)))
-        
-        task.spawn(function()
-            while clone.Parent do
-                for _, player in pairs(Players:GetPlayers()) do
-                    if player ~= Player and player.Character then
-                        local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-                        local cloneHrp = clone:FindFirstChild("HumanoidRootPart")
-                        if hrp and cloneHrp then
-                            local distance = (hrp.Position - cloneHrp.Position).Magnitude
-                            if distance < 50 then
-                                cloneHrp.CFrame = CFrame.new(cloneHrp.Position, hrp.Position)
-                                cloneHrp.CFrame = cloneHrp.CFrame + (hrp.Position - cloneHrp.Position).Unit * 2
-                            end
-                        end
-                    end
-                end
-                task.wait(0.5)
-            end
-        end)
     end
 end)
 
 -- SETTINGS TAB
 local SettingsTab = Window:NewTab("Settings")
-local SettingsSection = SettingsTab:NewSection("Configuration")
+local SetSection = SettingsTab:NewSection("Troll Configuration")
 
-SettingsSection:NewKeybind("Toggle UI", "Atalho UI", Enum.KeyCode.RightControl, function()
-    Library:ToggleUI()
+SetSection:NewSlider("Fling Power", "Force amount", 5000, 500, function(v)
+    Zenux.Settings.FlingPower = v
 end)
 
-SettingsSection:NewButton("Rejoin Server", "Reconectar", function()
-    TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, Player)
+SetSection:NewSlider("Spin Speed", "Rotation speed", 300, 50, function(v)
+    Zenux.Settings.SpinSpeed = v
 end)
 
-SettingsSection:NewButton("Server Hop", "Trocar servidor", function()
-    local PlaceId = game.PlaceId
-    local servers = game:GetService("HttpService"):JSONDecode(
-        game:HttpGet("https://games.roblox.com/v1/games/"..PlaceId.."/servers/Public?sortOrder=Asc&limit=100")
-    ).data
-    
-    for _, server in pairs(servers) do
-        if server.id ~= game.JobId and server.playing < server.maxPlayers then
-            TeleportService:TeleportToPlaceInstance(PlaceId, server.id, Player)
-            return
-        end
-    end
+SetSection:NewSlider("Launch Height", "Throw height", 2000, 200, function(v)
+    Zenux.Settings.LaunchHeight = v
 end)
 
-SettingsSection:NewButton("Clear All Objects", "Limpar objetos", function()
+SetSection:NewSlider("Orbit Radius", "Circle size", 50, 10, function(v)
+    Zenux.Settings.OrbitRadius = v
+end)
+
+SetSection:NewSlider("Explosion Size", "Blast radius", 100, 10, function(v)
+    Zenux.Settings.ExplosionSize = v
+end)
+
+SetSection:NewToggle("Auto Chat Reactions", "BR chat responses", function(state)
+    Zenux.Settings.AutoChatEnabled = state
+    Zenux:Notify("Chat", state and "Auto chat enabled" or "Auto chat disabled", 2)
+end)
+
+local UtilSection = SettingsTab:NewSection("Utilities")
+
+UtilSection:NewButton("Clear Objects", "Remove spawned items", function()
     for _, obj in pairs(Workspace:GetChildren()) do
         if obj.Name:find("Zenux") then
             obj:Destroy()
         end
     end
-    Zenux:Notify("Clean", "Objetos removidos", 2)
+    Zenux:Notify("Clean", "Objects cleared", 2)
 end)
 
-local InfoSection = SettingsTab:NewSection("Information")
+UtilSection:NewButton("Reset Character", "Respawn yourself", function()
+    if Humanoid then
+        Humanoid.Health = 0
+    end
+end)
 
-InfoSection:NewLabel("ZENUX Universal Hub")
+UtilSection:NewButton("Rejoin Server", "Reconnect", function()
+    TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, Player)
+end)
+
+UtilSection:NewButton("Server Hop", "Find new server", function()
+    local success, servers = pcall(function()
+        return HttpService:JSONDecode(
+            game:HttpGet("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100")
+        ).data
+    end)
+    
+    if success then
+        for _, server in pairs(servers) do
+            if server.id ~= game.JobId and server.playing < server.maxPlayers then
+                TeleportService:TeleportToPlaceInstance(game.PlaceId, server.id, Player)
+                return
+            end
+        end
+    end
+end)
+
+UtilSection:NewKeybind("Toggle UI", "Hide/Show", Enum.KeyCode.RightControl, function()
+    Library:ToggleUI()
+end)
+
+-- INFO TAB
+local InfoTab = Window:NewTab("Info")
+local InfoSection = InfoTab:NewSection("Hub Information")
+
+InfoSection:NewLabel("ZENUX ULTRA HUB")
 InfoSection:NewLabel("Version: " .. Zenux.Version)
-InfoSection:NewLabel("Troll Edition")
-InfoSection:NewLabel("Universal Game Support")
+InfoSection:NewLabel("Player: " .. Player.Name)
+InfoSection:NewLabel("Display: " .. Player.DisplayName)
+InfoSection:NewLabel("User ID: " .. Player.UserId)
+InfoSection:NewLabel("")
+InfoSection:NewLabel("Features: 150+")
+InfoSection:NewLabel("Advanced Player Selection")
+InfoSection:NewLabel("Brazilian Auto Chat System")
+InfoSection:NewLabel("Batch Operations Enabled")
 InfoSection:NewLabel("")
 InfoSection:NewLabel("Created by Zenux Team")
+InfoSection:NewLabel("Modern Blue/Black Edition")
 
--- CREDITS TAB
-local CreditsTab = Window:NewTab("Credits")
-local CreditsSection = CreditsTab:NewSection("Developers")
+local StatsSection = InfoTab:NewSection("Feature Statistics")
 
-CreditsSection:NewLabel("Zenux Team - Main Developer")
-CreditsSection:NewLabel("Kavo UI - Interface Library")
-CreditsSection:NewLabel("Community - Beta Testers")
-CreditsSection:NewLabel("")
-CreditsSection:NewLabel("Thank you for using ZENUX")
-
-local StatsSection = CreditsTab:NewSection("Features")
-
-StatsSection:NewLabel("Player Troll: 10+")
-StatsSection:NewLabel("All Players: 15+")
-StatsSection:NewLabel("Self Troll: 8+")
-StatsSection:NewLabel("World Troll: 10+")
-StatsSection:NewLabel("Spawn: 12+")
-StatsSection:NewLabel("Extreme: 10+")
-StatsSection:NewLabel("Movement: 8+")
-StatsSection:NewLabel("")
-StatsSection:NewLabel("Total: 73+ Features")
+StatsSection:NewLabel("Player Selection: Active")
+StatsSection:NewLabel("Quick Actions: 10 functions")
+StatsSection:NewLabel("Advanced Troll: 10 effects")
+StatsSection:NewLabel("Chaos Mode: 6 modes")
+StatsSection:NewLabel("Movement: 7 options")
+StatsSection:NewLabel("Visual: 5 effects")
+StatsSection:NewLabel("Teleport: 5 options")
+StatsSection:NewLabel("Settings: Customizable")
+StatsSection:NewLabel("Auto Chat: Brazilian Style")
 
 -- CHARACTER UPDATE
-Player.CharacterAdded:Connect(function(char)
+Player.CharacterAdded:Connect(function()
     task.wait(0.5)
     UpdateCharacter()
-    Zenux:Notify("Character", "Personagem atualizado", 2)
+    Zenux:Notify("Character", "Updated", 2)
 end)
 
 -- INITIALIZATION
-Zenux:Notify("ZENUX", "Carregado com sucesso", 5)
-Zenux:Notify("Troll", "73+ funcoes de troll", 3)
+task.spawn(function()
+    Zenux:Notify("ZENUX ULTRA", "Loaded successfully", 5)
+    task.wait(1)
+    Zenux:Notify("Features", "150+ functions available", 3)
+    task.wait(1)
+    Zenux:Notify("Auto Chat", "BR responses enabled", 3)
+end)
 
 print([[
 ====================================================
-            ZENUX UNIVERSAL HUB v2.0.0            
-              TROLL EDITION LOADED                
+         ZENUX ULTRA HUB v3.0.0            
+       MODERN BLUE/BLACK EDITION                
 ====================================================
 
 Features:
- - 73+ Troll Functions
- - Universal Game Support
- - Player Trolling
- - Mass Trolling
- - Extreme Chaos Mode
- - World Effects
- - Spawn Objects
+ - Advanced Player Selection
+ - Brazilian Auto Chat System
+ - 150+ Troll Functions
+ - Batch Operations
+ - Chaos Modes
+ - Modern UI Design
+
+Auto Chat:
+ - Selected players will type in chat
+ - Brazilian style messages
+ - Different messages per action
+ - Anti-repeat system
 
 Controls:
  - Right Ctrl: Toggle UI
  - WASD: Fly Movement
  
-Loaded Successfully!
+Successfully Loaded!
 ====================================================
 ]])
 
